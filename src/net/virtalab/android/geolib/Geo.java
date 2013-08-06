@@ -1,8 +1,12 @@
 package net.virtalab.android.geolib;
 
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+
+import java.text.DecimalFormat;
+import java.text.ParseException;
 
 /**
  * Geolocation operations
@@ -42,6 +46,40 @@ public class Geo {
             GeoBean geoBean = GeoBean.getBean();
             geoBean.setLocation(location);
             return OK;
+        }
+        public static String getLocationString(Location location){
+            if(location==null) { return Locator.getLocationErrorString(LOCATION_NOT_FOUND); }
+
+            Resources r = GeoApp.getContext().getResources();
+            Number lat = Locator.formatCoordinates(location.getLatitude());
+            Number lng = Locator.formatCoordinates(location.getLongitude());
+
+            return String.format(r.getString(R.string.geo_location_string),lat,lng);
+        }
+
+        public static String getLocationErrorString(int replyCode){
+            Resources r = GeoApp.getContext().getResources();
+            String errorString;
+            switch (replyCode){
+                case LOCATION_NOT_FOUND:
+                    errorString = r.getString(R.string.geo_no_location_found);
+                    break;
+                case NULL_PARAMS_DETECTED:
+                    errorString = r.getString(R.string.geo_null_params_passed);
+                    break;
+                default:
+                    errorString = "";
+            }
+            return errorString;
+        }
+        private static Number formatCoordinates(double coordinate){
+            DecimalFormat df = new DecimalFormat("##.####");
+            String format = df.format(coordinate);
+            try{
+               return df.parse(format);
+            }catch (ParseException pe){
+               return coordinate;
+            }
         }
     }
 }
