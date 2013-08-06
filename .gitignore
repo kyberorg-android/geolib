@@ -18,3 +18,16 @@ local.properties
 # Eclipse project files
 .classpath
 .project
+.settings/
+proguard-project.txt
+
+#IDEA project files
+*.ipr
+*.iws
+*.iml
+.idea
+
+#Android Studio project files
+.gradle/
+*/build/ 
+
