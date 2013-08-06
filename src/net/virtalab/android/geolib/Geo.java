@@ -47,6 +47,12 @@ public class Geo {
             geoBean.setLocation(location);
             return OK;
         }
+
+        /**
+         * Builds String with location (coordinates)
+         * @param location Location object
+         * @return string with location
+         */
         public static String getLocationString(Location location){
             if(location==null) { return Locator.getLocationErrorString(LOCATION_NOT_FOUND); }
 
@@ -57,6 +63,11 @@ public class Geo {
             return String.format(r.getString(R.string.geo_location_string),lat,lng);
         }
 
+        /**
+         * Builds Error String based on replyCode provided
+         * @param replyCode error code received from findLocation()
+         * @return Human readable error string
+         */
         public static String getLocationErrorString(int replyCode){
             Resources r = GeoApp.getContext().getResources();
             String errorString;
@@ -72,6 +83,12 @@ public class Geo {
             }
             return errorString;
         }
+
+        /**
+         * Formats coordinates
+         * @param coordinate unformatted coordinate
+         * @return formatted number (2 digits+delimeter+4 digits)
+         */
         private static Number formatCoordinates(double coordinate){
             DecimalFormat df = new DecimalFormat("##.####");
             String format = df.format(coordinate);
