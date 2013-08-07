@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="geo_location_string">Lat: %1$s Long: %2$s</string>
-    <string name="geo_no_location_found">No location found</string>
-    <string name="geo_null_params_passed">One of parameters passed to findLocation() method is NULL</string>
-</resources>

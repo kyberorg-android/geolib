@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="jardoc">
+<property file="app.properties"/>
+<property file="local.properties"/>
+<target name="doc" depends="public_doc,dev_doc"
+		/>
+<target name="public_doc" description="GeoLib Public Javadoc">
+    <javadoc
+		destdir="docs/api" 
+		doctitle="GeoLib Class reference" 
+		verbose="on" 
+        use="true"
+		splitindex="true"
+		version="true"		
+        classpath="${sdk.dir}\platforms\android-${sdk.platform}\android.jar"
+        sourcepath="src"
+        linkoffline="http://d.android.com/reference ${sdk.dir}\docs\reference"
+        >
+    </javadoc>
+</target>
+<target name="dev_doc" description="GeoLib Developers Javadoc">
+    <javadoc
+		access="private"
+		destdir="docs/dev" 
+		doctitle="GeoLib Class reference" 
+		verbose="on" 
+        use="true"
+		splitindex="true"
+		version="true"		
+        classpath="${sdk.dir}\platforms\android-${sdk.platform}\android.jar"
+        sourcepath="src"
+        linkoffline="http://d.android.com/reference ${sdk.dir}\docs\reference"
+        >
+    </javadoc>
+</target>
+<target name="jardoc" depends="doc">
+    <jar destfile="docs\${app.name}-${app.version}-javadoc.jar" basedir="docs/api" />
+</target>
+</project>
