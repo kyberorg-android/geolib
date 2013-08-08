@@ -7,13 +7,22 @@ import android.content.Context;
  * Application object which holder Context with Resources
  * <p/>
  */
-class GeoApp extends Application {
+public class GeoApp extends Application {
     private static Context mContext;
 
+    /**
+     * Method called at very start of application
+     */
     public void onCreate(){
         super.onCreate();
         mContext =this;
     }
+
+    /**
+     * Provides App Context
+     *
+     * @return Context
+     */
     public static Context getContext(){
        return mContext;
    }
