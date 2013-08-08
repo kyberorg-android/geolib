@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="geolib_locator_location_string">Lat: %1$s Long: %2$s</string>
+    <string name="geolib_locator_error_locator_params_null">Argument passed to findLocation is NULL. Cannot operate on NULL</string>
+    <string name="geolib_locator_error_provider_null">Provider cannot be NULL. Please refer to LocationManager for valid provider values</string>
+    <string name="geolib_locator_error_provider_not_valid">Given provider is not valid. Please refer to LocationManager for valid provider values</string>
+    <string name="geolib_locator_error_location_service_na">Location Service not available at your device</string>
+    <string name="geolib_locator_error_no_location_found">No location found</string>
+    <string name="geolib_locator_error_location_null">Location not found</string>
+    <string name="geolib_locator_error_unknown_error">Error occured at Locator. Additionally error occured while determine exact error.</string>
+</resources>
