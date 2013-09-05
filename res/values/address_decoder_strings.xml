@@ -5,7 +5,8 @@
     <string name="geolib_adecoder_error_location_null">Location cannot be NULL</string>
     <string name="geolib_adecoder_error_limit_not_valid">Limit must be 1 or more. Smaller numbers (1 to 5) are recommended</string>
     <string name="geolib_adecoder_error_location_out_of_range">Man, this location is somewhere outside Earth</string>
+    <string name="geolib_adecoder_error_location_unparseable">Location cannot be correcly parsed as number</string>
     <string name="geolib_adecoder_error_service_na">Address Resolving Service is not available</string>
-    <string name="geolib_adecoder_error_address_not_found">Address not found</string>
     <string name="geolib_adecoder_error_unknown_error">Error occured at Decoder. Additionally error occured while determine exact error</string>
+    <string name="geolib_adecoder_error_address_not_found">Address not found</string>
 </resources>

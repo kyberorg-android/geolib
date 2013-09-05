@@ -6,11 +6,12 @@ import android.location.LocationManager;
 
 /**
  * Object with parameters passed to Locator methods
- * <p/>
+ *
  */
 public class LocatorParams {
     private LocationManager lm =null;
     private String provider = null;
+    private Context ctx = null;
 
     /**
      * Builder for LocatorParams
@@ -18,16 +19,19 @@ public class LocatorParams {
     public static class Builder {
         //Compulsory params
         private String provider = null;
+        private Context ctx = null;
 
         //Optional params - init with defaults
-        private LocationManager lm = (LocationManager) GeoApp.getContext().getSystemService(Context.LOCATION_SERVICE);
+        private LocationManager lm = null; //lazy init
 
         /**
          * Constructor with compulsory params
          * @param provider string with provider
+         * @param ctx Application context
          */
-        public Builder(String provider){
+        public Builder(String provider,Context ctx){
             this.provider = provider;
+            this.ctx = ctx;
         }
 
         /**
@@ -45,6 +49,7 @@ public class LocatorParams {
          * @return LocatorParams object
          */
         public LocatorParams build(){
+            this.lm = (LocationManager) this.ctx.getSystemService(Context.LOCATION_SERVICE);
             return new LocatorParams(this);
         }
     }
@@ -56,6 +61,7 @@ public class LocatorParams {
     private LocatorParams(Builder builder){
         lm = builder.lm;
         provider = builder.provider;
+        ctx = builder.ctx;
     }
 
     //Getters
@@ -74,5 +80,9 @@ public class LocatorParams {
      */
     String getProvider(){
         return this.provider;
+    }
+
+    Context getContext(){
+        return this.ctx;
     }
 }

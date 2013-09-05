@@ -1,8 +1,10 @@
 package net.virtalab.android.geolib;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
+import net.virtalab.android.geolib.exception.LocatorException;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -13,71 +15,49 @@ import java.text.ParseException;
  * Also it provides location string (and error string) generator methods
  */
 public class Locator {
+
+    private LocationManager lm;
+    private String provider;
+    private Context ctx;
+
     /**
-     * Status which indicates that everything worked fine and no error occured
+     * Returns locator
+     *
+     * @param params Parameter object built with Locator.Builder
+     * @return  Locator object
      */
-    public static final int OK = 0;
+    public static Locator getLocator(LocatorParams params){
+        if(params == null){ return null; }
+        return new Locator(params);
+    }
+
     /**
-     * Status which indicates that parameter passed to method is NULL
+     *  Constructor
+     *
+     * @param params Parameter object built with Locator.Builder
      */
-    public static final int LOCATOR_PARAMS_IS_NULL = 2;
-    /**
-     * Status which indicates that given provider string is NULL
-     */
-    public static final int PROVIDER_IS_NULL = 33;
-    /**
-     * Status which indicates that given provider string contains value out of providers scope which can be found at LocationManager class doc
-     */
-    public static final int PROVIDER_IS_NOT_VALID = 34;
-    /**
-     * Status which indicates that location service is not available at the device
-     */
-    public static final int LOCATION_SERVICE_NOT_AVAILABLE = 35;
-    /**
-     * Status which indicates that location was not found
-     */
-    public static final int LOCATION_IS_NOT_FOUND = 36;
-    /**
-     * Status which indicates that location param passed to method is NULL
-     */
-    public static final int LOCATION_IS_NULL = 37;
+    public Locator(LocatorParams params){
+        this.lm = params.getLocationManager();
+        this.provider = params.getProvider();
+        this.ctx = params.getContext();
+    }
 
     /**
      * Tries to request Location from LocationManager
      *
-     * @param params Parameter object built with Locator.Builder
-     * @return LocationBean with replyCode and Location object. Is replyCode is not Locator.OK - no Location object present.
+     * @return Location object or null when not found
      */
-    public static LocationBean findLocation(LocatorParams params){
+    public Location findLocation() throws LocatorException {
 
-        if(params == null){ return new LocationBean(LOCATOR_PARAMS_IS_NULL); }
-
-        LocationManager lm = params.getLocationManager();
-        String provider = params.getProvider();
-
-        if(lm==null){ return new LocationBean(LOCATION_SERVICE_NOT_AVAILABLE); }
-        if(provider==null){ return new LocationBean(PROVIDER_IS_NULL); }
-        if(!isProviderValid(provider)){ return  new LocationBean(PROVIDER_IS_NOT_VALID); }
-
-        Location location = lm.getLastKnownLocation(provider);
-        if(location==null) { return new LocationBean(LOCATION_IS_NOT_FOUND); }
-
-        return new LocationBean(OK,location);
-    }
-
-    /**
-     * Generates Location string which you can use is your application
-     *
-     * @param bean valid locationBean
-     * @return location string (or error string if status is not Locator.OK) or null if passed locationBean is null
-     */
-    public static String getLocationString(LocationBean bean){
-        if(bean == null){ return null; }
-
-        if(bean.getReplyCode()!=OK){
-            return Locator.getErrorString(bean.getReplyCode());
+        if(lm==null){
+            throw generateLocatorException(Failure.LOCATION_SERVICE_NOT_AVAILABLE);
         }
-        return Locator.getLocationString(bean.getLocation());
+
+        if( (provider==null) || (!isProviderValid(provider)) ){
+            throw generateLocatorException(Failure.PROVIDER_IS_NOT_VALID);
+        }
+
+        return lm.getLastKnownLocation(provider);
     }
 
     /**
@@ -86,24 +66,13 @@ public class Locator {
      * @param location valid Location object
      * @return Location String when location is ok. Error string is passed location is null.
      */
-    public static String getLocationString(Location location){
-        if(location == null){ return Locator.getErrorString(LOCATION_IS_NULL); }
+    public String getLocationString(Location location){
+        if(location == null){ return this.getErrorString(Failure.LOCATION_IS_NULL); }
         Number lat = Locator.formatCoordinate(location.getLatitude());
         Number lng = Locator.formatCoordinate(location.getLongitude());
 
-        Resources r = GeoApp.getContext().getResources();
+        Resources r = ctx.getResources();
         return String.format(r.getString(R.string.geolib_locator_location_string),lat,lng);
-    }
-
-    /**
-     * Generates Error String which depends on errorCode. You can use is your application
-     *
-     * @param bean Bean with replyCode
-     * @return Error String or null if bean is null
-     */
-    public static String getErrorString(LocationBean bean){
-        if(bean==null){ return null; }
-        return getErrorString(bean.getReplyCode());
     }
 
     /**
@@ -112,30 +81,21 @@ public class Locator {
      * @param replyCode valid replyCode. See Locator constants
      * @return Error String
      */
-    public static String getErrorString(int replyCode){
-        Resources r = GeoApp.getContext().getResources();
+    public String getErrorString(Failure replyCode){
+        Resources r = this.ctx.getResources();
         String errorString;
         switch (replyCode){
             case LOCATOR_PARAMS_IS_NULL:
                errorString = r.getString(R.string.geolib_locator_error_locator_params_null);
                break;
-            case PROVIDER_IS_NULL:
-                errorString = r.getString(R.string.geolib_locator_error_provider_null);
-                break;
             case PROVIDER_IS_NOT_VALID:
                 errorString = r.getString(R.string.geolib_locator_error_provider_not_valid);
                 break;
             case LOCATION_SERVICE_NOT_AVAILABLE:
                 errorString = r.getString(R.string.geolib_locator_error_location_service_na);
                 break;
-            case LOCATION_IS_NOT_FOUND:
-                errorString = r.getString(R.string.geolib_locator_error_no_location_found);
-                break;
             case LOCATION_IS_NULL:
                 errorString = r.getString(R.string.geolib_locator_error_location_null);
-                break;
-            case OK:
-                errorString = "";
                 break;
             default:
                 errorString = r.getString(R.string.geolib_locator_error_unknown_error);
@@ -181,5 +141,29 @@ public class Locator {
         }catch (ParseException pe){
             return coordinate;
         }
+    }
+
+    private LocatorException generateLocatorException(Failure failure){
+          String message = this.getErrorString(failure);
+           return new LocatorException(failure,message);
+    }
+    public enum Failure {
+        /**
+         * Result which indicates that parameter passed to method is NULL
+         */
+        LOCATOR_PARAMS_IS_NULL,
+        /**
+         * Result which indicates that given provider string contains value out of providers scope which can be found at LocationManager class doc
+         */
+        PROVIDER_IS_NOT_VALID,
+        /**
+         * Result which indicates that location service is not available at the device
+         */
+        LOCATION_SERVICE_NOT_AVAILABLE,
+        /**
+         * Result which indicates that location param passed to method is NULL
+         */
+        LOCATION_IS_NULL;
+
     }
 }

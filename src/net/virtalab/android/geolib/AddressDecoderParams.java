@@ -1,5 +1,6 @@
 package net.virtalab.android.geolib;
 
+import android.content.Context;
 import android.location.Location;
 
 import java.util.Locale;
@@ -12,6 +13,7 @@ public class AddressDecoderParams {
     private Location location;
     private Locale locale;
     private int limit;
+    private Context ctx;
 
     /**
      * Builder class
@@ -19,6 +21,7 @@ public class AddressDecoderParams {
     public static class Builder{
         //Compulsory params
         private Location location;
+        private Context ctx;
 
         //Optional params - init with defaults
         private Locale locale = Locale.getDefault();
@@ -26,10 +29,13 @@ public class AddressDecoderParams {
 
         /**
          * Constructor with compulsory params
+         *
          * @param location Valid Location object
+         * @param ctx Aplication Context
          */
-        public Builder(Location location){
+        public Builder(Location location,Context ctx){
             this.location = location;
+            this.ctx = ctx;
         }
 
         /**
@@ -62,8 +68,10 @@ public class AddressDecoderParams {
     }
     private AddressDecoderParams(Builder builder){
         this.location = builder.location;
+        this.ctx = builder.ctx;
         this.locale = builder.locale;
         this.limit = builder.limit;
+
     }
     //Getters
     Location getLocation(){
@@ -74,5 +82,8 @@ public class AddressDecoderParams {
     }
     int getLimit(){
         return this.limit;
+    }
+    Context getContext(){
+        return this.ctx;
     }
 }
